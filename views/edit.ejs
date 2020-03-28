@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title><%= title %></title>
+    <link rel='stylesheet' href='/stylesheets/style.css' />
+  </head>
+  <body>
+
+    <form action="/update/" method="POST">
+      <label><h1><%= title %></h1></label><br>
+      <input type="hidden" name="id" value="<%= records._id %>">
+      Name:<input type="text" name="name" value="<%= records.name %>"><br><br>
+      Email:<input type="text" name="email" value="<%= records.email %>"><br><br>
+      type:<input type="text" name="type" value="<%= records.etype %>"><br><br><br><br>
+      hourlyrate:<input type="text" name="hrate" value="<%= records.hourlyrate %>"><br><br>
+      totalHour:<input type="text" name="thour" value="<%= records.totalHour %>"><br><br>
+      <input type="submit" value="submit" name="submit">
+    </form>
+  </body>
+</html>
