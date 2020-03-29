@@ -5,6 +5,10 @@
     <link rel='stylesheet' href='/stylesheets/style.css' />
   </head>
   <body>
+    <% if(msg!=''){%>
+      <p><%= msg %></p>
+    <%}%>
+   
     <form action="/search/" method="POST">
       <label><h1>Filter Employee</h1></label><br>
       Name:<input type="text" name="fltrname">
