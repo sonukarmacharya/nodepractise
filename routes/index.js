@@ -1,6 +1,9 @@
 var express = require('express');
 var multer = require('multer')
 var path = require('path')
+var jwt = require('jsonwebtoken')
+var jwt = require('jsonwebtoken')
+
 var empModel = require('../modules/employee')
 var uploadModel = require('../modules/upload')
 var router = express.Router();
@@ -8,6 +11,12 @@ var router = express.Router();
 var employee = empModel.find({})
 var imageDisplay = uploadModel.find({})
 router.use(express.static(__dirname+"./public/"))
+
+if(typeof localStorage == "undefined" || localStorage == null){
+  const LocalStorage = require('node-localstorage').LocalStorage
+  localStorage = new LocalStorage("./scratch")
+}
+
 /*multer function*/
 var Storage =  multer.diskStorage({
   destination:"./public/uploads/",
@@ -43,8 +52,30 @@ router.get('/upload', function(req, res, next) {
       })
      });
 
+/* login and logout page*/
+router.get('/login', function(req, res, next) {
+  var token = jwt.sign({ foo: 'bar' }, 'logintoken');
+  localStorage.setItem('myToken',token)//as like cookies
+     res.send("Login successfully")
+  })
+  router.get('/logout', function(req, res, next) {
+    localStorage.removeItem('myToken')
+    res.send("Logout successfully")
+    })
+
+/*middle ware for login */
+function checkLogin(req,res,next){
+  var myToken = localStorage.getItem('myToken')
+  try{
+    jwt.verify(myToken,'logintoken')
+  }
+  catch(err){
+    res.send("Login is nedded")
+  }
+  next()
+}
 /* Main page*/
-router.get('/', function(req, res, next) {
+router.get('/',checkLogin, function(req, res, next) {
   employee.exec(function(err,data){
     if(err) throw err
     res.render('index', { title: 'Employee records',records:data,msg:''});
@@ -93,7 +124,7 @@ router.post('/', function(req, res, next) {
         var filterParameter = {}
       }
 
-     var employeeFilter = empModel.find(filterParameter)
+      employeeFilter = empModel.find(filterParameter)
      employeeFilter.exec(function(err,data){
           if(err) throw err
           res.render('index', { title: 'Employee records',records:data});
